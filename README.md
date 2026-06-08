@@ -1,160 +1,138 @@
 # open-source-contribution
 
-# Contribution [#]: [Issue Title]
+Contribution [#]: Convert Plugin Playlist Uses Original File Extension Instead of Converted Extension
 
-**Contribution Number:** [1 / 2 / 3]  
-**Student:** [Your Name]  
-**Issue:** [GitHub issue link]  
-**Status:** [Phase I / Phase II / Phase III / Phase IV] [In Progress / Complete]
+Contribution Number: 1
 
----
+Student: Kidus Getachew
 
-## Why I Chose This Issue
+Issue: https://github.com/beetbox/beets/issues/5786
 
-[1-2 paragraphs explaining why this issue interests you, how it matches your skills/learning goals, what you hope to learn]
+Status: Phase I - Complete
 
----
+Why I Chose This Issue
 
-## Understanding the Issue
+I chose this issue because it involves debugging a real-world software defect in a mature open-source project. The issue appears to be well-defined, includes reproduction steps, expected behavior, and configuration details, making it an approachable first contribution while still requiring investigation of an unfamiliar codebase.
 
-### Problem Description
+This issue also aligns with my interests in software engineering and backend development. Solving it will require understanding how the beets conversion pipeline generates playlist files and how file paths are updated after transcoding. I hope to gain experience navigating a large Python codebase, tracing program execution, and contributing a fix that directly improves user functionality.
 
-[In your own words, what's broken or missing?]
+Understanding the Issue
+Problem Description
 
-### Expected Behavior
+The convert plugin generates an M3U playlist after transcoding audio files. However, the generated playlist references the original source file extension rather than the newly converted file extension.
 
-[What should happen?]
+For example, a FLAC file is successfully converted into an Opus file, but the playlist still points to the original .flac file. As a result, the generated playlist contains invalid file references and cannot correctly play the transcoded files.
 
-### Current Behavior
+Expected Behavior
 
-[What actually happens?]
+When the convert command creates a playlist, each playlist entry should reference the converted file that was actually generated.
 
-### Affected Components
+Example:
 
-[Which parts of the codebase are involved?]
+RichaadEB/Lifelight (English Version)/01 Lifelight - English Version.opus
 
----
+Current Behavior
 
-## Reproduction Process
+The audio file is successfully converted to Opus format:
 
-### Environment Setup
+01 Lifelight - English Version.opus
 
-[Notes on setting up your local development environment - challenges you faced, how you solved them]
+However, the generated playlist references:
 
-### Steps to Reproduce
+01 Lifelight - English Version.flac
 
-1. [Step 1]
-2. [Step 2]
-3. [Observed result]
+which no longer matches the converted output.
 
-### Reproduction Evidence
+Affected Components
+Convert plugin
+Playlist generation logic
+Path construction for converted files
+M3U playlist creation functionality
+Reproduction Process
+Environment Setup
 
-- **Commit showing reproduction:** [Link to commit in your fork]
-- **Screenshots/logs:** [If applicable]
-- **My findings:** [What you discovered during reproduction]
+The issue was reported on Linux (NixOS 25.05) using Python 3.12.10 and beets 2.3.1. The reporter provided a complete configuration and reproduction example. Environment setup and local reproduction will be completed during Phase II.
 
----
+Steps to Reproduce
+Configure beets with the convert plugin enabled.
+Set output format to Opus.
+Run:
 
-## Solution Approach
+beet convert -m test.m3u lifelight
 
-### Analysis
+Verify the converted output file is generated.
+Open the generated playlist.
 
-[Your analysis of the root cause - what's causing the issue?]
+Observed Result:
 
-### Proposed Solution
+The playlist references the original FLAC file instead of the converted Opus file.
 
-[High-level description of your fix approach]
+Reproduction Evidence
 
-### Implementation Plan
+Commit showing reproduction: To be completed in Phase II.
 
-Using UMPIRE framework (adapted):
+Screenshots/logs: Included in issue report.
 
-**Understand:** [Restate the problem]
+My findings:
 
-**Match:** [What similar patterns/solutions exist in the codebase?]
+The conversion process itself completes successfully. The defect appears to occur when playlist entries are generated after conversion.
 
-**Plan:** [Step-by-step implementation plan]
-1. [Modify file X to do Y]
-2. [Add function Z]
-3. [Update tests]
+Solution Approach
+Analysis
 
-**Implement:** [Link to your branch/commits as you work]
+My initial hypothesis is that the playlist generator is using the original source file path metadata instead of the converted destination path returned by the conversion process.
 
-**Review:** [Self-review checklist - does it follow the project's contribution guidelines?]
+Because the converted file is correctly created, the bug likely exists in playlist generation rather than audio conversion.
 
-**Evaluate:** [How will you verify it works?]
+Proposed Solution
 
----
+Investigate where playlist entries are created after conversion and ensure the converted destination path is used when writing playlist entries.
 
-## Testing Strategy
+Implementation Plan
+Understand
 
-### Unit Tests
+Determine how the convert plugin tracks source and destination file paths during transcoding.
 
-- [ ] Test case 1: [Description]
-- [ ] Test case 2: [Description]
-- [ ] Test case 3: [Description]
+Match
 
-### Integration Tests
+Identify similar code paths that generate file references after conversion or relocation operations.
 
-- [ ] Integration scenario 1
-- [ ] Integration scenario 2
-
-### Manual Testing
-
-[What you tested manually and results]
-
----
-
-## Implementation Notes
-
-### Week [X] Progress
-
-[What you built this week, challenges faced, decisions made]
-
-### Week [Y] Progress
-
-[Continue documenting as you work]
-
-### Code Changes
-
-- **Files modified:** [List]
-- **Key commits:** [Links to important commits]
-- **Approach decisions:** [Why you chose certain approaches]
-
----
-
-## Pull Request
-
-**PR Link:** [GitHub PR URL when submitted]
-
-**PR Description:** [Draft or final PR description - much of the content above can be adapted]
-
-**Maintainer Feedback:**
-- [Date]: [Summary of feedback received]
-- [Date]: [How you addressed it]
-
-**Status:** [Awaiting review / Iterating / Approved / Merged]
-
----
-
-## Learnings & Reflections
-
-### Technical Skills Gained
-
-[What you learned technically]
-
-### Challenges Overcome
-
-[What was hard and how you solved it]
-
-### What I'd Do Differently Next Time
-
-[Reflection on your process]
-
----
-
-## Resources Used
-
-- [Link to helpful documentation]
-- [Tutorial or Stack Overflow post that helped]
-- [GitHub issues or discussions that helped]
+Plan
+Locate convert plugin implementation.
+Trace playlist generation workflow.
+Identify where file paths are selected for playlist output.
+Replace source-path usage with converted-path usage if appropriate.
+Add or update automated tests.
+Verify generated playlists reference converted files.
+Implement
+
+To be completed during Phase III.
+
+Review
+Follow project contribution guidelines.
+Verify style and formatting requirements.
+Confirm tests pass.
+Evaluate
+
+Verify that generated playlists reference converted output files and that existing functionality remains unchanged.
+
+Testing Strategy
+Unit Tests
+Verify playlist entry uses converted extension.
+Verify playlist entry uses converted destination path.
+Verify existing conversion functionality remains intact.
+Integration Tests
+Convert FLAC to Opus and generate playlist.
+Convert multiple files and verify all playlist entries.
+Manual Testing
+
+To be completed during implementation.
+
+Learnings & Reflections
+
+This issue demonstrates how a small path-handling bug can affect user-facing functionality even when the primary conversion process succeeds. I expect to learn more about Python plugin architectures, debugging workflows, and contributing fixes to established open-source projects.
+
+Resources Used
+GitHub issue #5786
+beets project documentation
+beets contributor documentation
