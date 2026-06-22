@@ -1,17 +1,24 @@
 # Contribution #1: Convert Plugin Playlist Uses Original File Extension Instead of Converted Extension
 
-**Contribution Number:** 1
-**Student:** Kidus Getachew
-**Issue:** https://github.com/beetbox/beets/issues/5786
-**Status:** Phase II Complete
+## Contribution Number
+1
 
-## Why I Chose This Issue
+## Student
+Kidus Getachew
+
+## Issue
+https://github.com/beetbox/beets/issues/5786
+
+## Status
+Phase III In Progress
+
+
+# Why I Chose This Issue
 
 I chose this issue because it involves debugging a real-world open-source bug in an established software project. The issue has clear reproduction steps and affects a user-facing feature, making it a good opportunity to practice understanding an existing codebase and contributing a meaningful improvement.
 
 This issue matches my software engineering goals because it involves debugging, understanding program flow, and working with a Python-based application. I am interested in learning how open-source projects structure their code, how bugs are traced, and how fixes are validated through testing.
 
----
 
 # Understanding the Issue
 
@@ -21,211 +28,203 @@ The beets `convert` plugin successfully converts audio files into a new format, 
 
 For example, a `.flac` file is converted into an `.opus` file, but the generated playlist still points to the `.flac` file. This causes the playlist to reference a file that may no longer exist.
 
+
 ## Expected Behavior
 
-When generating a playlist after conversion, the playlist should contain paths to the converted files.
+The generated playlist should reference the converted file.
 
 Example:
 
-```
+
 Artist/Album/song.opus
-```
+
+
 
 ## Current Behavior
 
-The conversion creates the new file successfully:
+The converted file is created successfully:
 
-```
+
 song.opus
-```
 
-but the playlist contains:
 
-```
+However, the generated playlist contains:
+
+
 song.flac
-```
 
-The playlist is pointing to the original source file instead of the converted output.
+
+The playlist points to the original source file instead of the converted output.
+
 
 ## Affected Components
 
-* beets convert plugin
-* playlist generation
-* file path handling
-* M3U playlist creation
+- Convert plugin
+- Playlist generation
+- File path handling
+- M3U playlist creation
 
----
 
 # Reproduction Process
 
 ## Environment Setup
 
 OS: macOS
+
 Python Version: 3.9.6
-beets Version: 2.3.1 / 2.5.1 (update with your installed version)
+
+beets Version: 2.5.1
+
 
 ## Steps to Reproduce
 
 1. Install beets.
-2. Enable the `convert` and `playlist` plugins.
+
+2. Enable the convert and playlist plugins.
+
 3. Import a test audio file:
 
-```
+```bash
 beet import -A ~/Music/Test
-```
-
-4. Confirm the file exists in the beets library:
-
-```
+Confirm the imported file:
 beet list -f '$path'
-```
-
-5. Convert the file and generate a playlist:
-
-```
+Convert the file and generate a playlist:
 beet convert -m test.m3u
-```
-
-6. Check the converted output:
-
-```
+Check converted output:
 find ~/TranscodedMusic -type f
-```
-
-7. Check the generated playlist:
-
-```
+Check generated playlist:
 cat ~/TranscodedMusic/test.m3u
-```
+Observed Result
 
-## Observed Result
+The converted file is generated correctly, but the playlist references the original .flac file instead of the converted .opus file.
 
-The converted file is created successfully, but the generated playlist references the original `.flac` file instead of the converted `.opus` file.
-
-## Reproduction Evidence
+Reproduction Evidence
 
 Commit showing reproduction:
 
-To be completed.
+To be added.
 
 Screenshots/logs:
 
-The reproduction output showed that the playlist contained the original extension while the converted directory contained the new converted file.
+The generated playlist output showed that the playlist contained the original extension instead of the converted file extension.
 
-## My Findings
+My Findings
 
-The issue does not appear to be in the audio conversion process because the converted file is generated correctly. The problem appears during playlist creation, where the wrong file path is being used.
+The conversion process itself works correctly. The issue appears during playlist generation where the original source path is used instead of the converted destination path.
 
----
+Solution Approach
+Analysis
 
-# Solution Approach
+The likely cause is that playlist generation is using the original library item path instead of the converted file path created by the convert plugin.
 
-## Analysis
+Proposed Solution
 
-The likely cause is that playlist generation uses the original library item path instead of the converted destination path created by the convert plugin.
+Update the playlist generation logic so that playlist entries reference converted files instead of the original source files.
 
-The fix will require locating where playlist entries are created and ensuring the converted path is used.
+Implementation Plan
+Understand
 
-## Proposed Solution
+Investigate how the convert plugin stores source and converted file paths.
 
-Update the playlist generation process so that generated playlists reference converted files instead of the original source files.
+Match
 
-## Implementation Plan
+Review existing path handling patterns in the beets codebase.
 
-### Understand
+Plan
+Locate the convert plugin implementation.
+Find where playlist entries are created.
+Identify where the incorrect file path is selected.
+Replace the original path reference with the converted path.
+Add tests to verify playlist output.
+Implement
 
-Investigate how the convert plugin stores source and destination paths.
+In progress.
 
-### Match
+Review
+Follow beets contribution guidelines.
+Ensure code style matches the project.
+Verify tests pass.
+Evaluate
 
-Review existing path handling patterns in the codebase and identify similar functionality.
+Confirm generated playlists point to converted files and existing functionality is unchanged.
 
-### Plan
+Testing Strategy
+Unit Tests
 
-1. Locate the convert plugin implementation.
-2. Find the code responsible for creating playlist entries.
-3. Determine where the incorrect file path is selected.
-4. Replace the original path reference with the converted path.
-5. Add tests to verify playlist output.
+Planned:
 
-### Implement
+Verify playlists contain converted file extensions.
+Verify converted paths are used instead of source paths.
+Verify existing playlist functionality remains unchanged.
+Integration Tests
 
-Branch:
+Planned:
 
-https://github.com/Kidus5168/beets/tree/fix-playlist-extension
+Convert FLAC files to Opus and generate playlists.
+Verify generated M3U files contain valid paths.
+Manual Testing
 
-### Review
+Completed:
 
-* Follow beets contribution guidelines.
-* Ensure code style matches the project.
-* Verify tests pass.
+Reproduced the original issue locally.
 
-### Evaluate
+Planned:
 
-Confirm that generated playlists point to converted files and that existing conversion behavior is unchanged.
+Verify the fix after implementation.
+Implementation Notes
+Phase III Progress
+What I built:
+Started Phase III investigation for issue #5786.
+Set up development workflow using my fork.
+Reproduced the reported bug locally.
+Confirmed the issue occurs during playlist generation after conversion.
+Challenges Faced:
+Understanding an unfamiliar open-source codebase.
+Identifying where converted file paths are handled.
+Next Steps:
+Locate the playlist generation logic.
+Implement the fix.
+Add regression tests.
+Submit a pull request.
+Code Changes
+Branch
 
----
+](https://github.com/Kidus5168/beets/tree/fix-playlist-extension)
+Files Modified
 
-# Testing Strategy
+None yet.
 
-## Unit Tests
+Commits
 
-Test cases:
+To be added after implementation.
 
-1. Verify playlists contain converted file extensions.
-2. Verify converted paths are used instead of source paths.
-3. Verify existing playlist functionality still works.
+Pull Request
+PR Link
 
-## Integration Tests
+To be added.
 
-1. Convert FLAC files to Opus and generate playlists.
-2. Verify generated M3U files contain valid paths.
+PR Description
 
-## Manual Testing
+To be added.
 
-Run:
+Maintainer Feedback
 
-```
-beet convert -m test.m3u
-```
+To be added.
 
-Verify:
+Learnings & Reflections
+Technical Skills Gained
+Debugging an unfamiliar open-source project.
+Understanding Python plugin architecture.
+Learning how file paths are handled during conversion workflows.
+Challenges Overcome
 
-* Converted files are created.
-* Playlist entries match converted files.
+The main challenge was setting up the environment and reproducing the issue. After configuring beets and importing a test file, the bug was successfully reproduced.
 
----
+What I'd Do Differently Next Time
 
-# Implementation Notes
+I would explore the project structure earlier and identify relevant files before beginning implementation.
 
-## Week 2 Progress
-
-* Set up beets environment.
-* Reproduced the playlist extension issue.
-* Documented expected and current behavior.
-
-
-
-# Learnings & Reflections
-
-## Technical Skills Gained
-
-* Debugging an unfamiliar open-source codebase.
-* Understanding Python plugin architecture.
-* Learning how software projects handle file paths and generated output.
-
-## Challenges Overcome
-
-The main challenge was setting up the environment and reproducing the issue locally. After configuring beets and importing a test file, the issue was successfully reproduced.
-
-## What I'd Do Differently Next Time
-
-I would spend more time understanding the project structure before reproduction and identify likely code locations earlier.
-
----
-
-# Resources Used
-
-* https://github.com/beetbox/beets/issues/5786
-* beets documentation
-* GitHub repository documentation
+Resources Used
+https://github.com/beetbox/beets/issues/5786
+beets documentation
+GitHub repository documentation
