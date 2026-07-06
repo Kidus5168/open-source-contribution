@@ -1,10 +1,22 @@
-Forked Repo: https://github.com/Kidus5168/beets
-PR Link: https://github.com/beetbox/beets/pull/6812
+Open Source Contribution — AutoGPT
+Project
+AutoGPT — a platform for building, deploying, and running continuous AI agents, including an agent marketplace and library.
 
-Summary: Added a missing test case to the convert plugin in beets. The --playlist option generates an m3u8 playlist of converted files, but there was no test verifying that when never_convert_lossy_files=True prevents a lossy file from being transcoded, the playlist keeps the original file extension. I added that test case to test_playlist_entry.
+Forked to: https://github.com/Kidus5168/AutoGPT
 
-Feedback received:
+Selected Issue
+#9879 — Marketplace data should be downloaded with Agent
+https://github.com/Significant-Gravitas/AutoGPT/issues/9879
 
-Bot reminded me to add a changelog entry
-Codecov confirmed all tests pass and coverage improved
-Status: Awaiting review
+Problem Summary
+When a user downloads an agent from the marketplace into their personal library, the agent shows up with stale information rather than the details it was published with. Two specific gaps:
+
+Wrong title. The downloaded agent displays the creator's original title from their own library instead of the title the agent was published under on the marketplace.
+Missing images. The agent's marketplace image is not downloaded, so the library entry is missing the artwork users saw on the marketplace.
+Expected behavior: A downloaded agent should appear in the user's library exactly as it was presented on the marketplace — with the current marketplace title and image intact.
+
+Why This Matters
+The download flow should carry over the marketplace-facing presentation data (title and image), not the creator's internal library record. This is a data-mapping issue in the agent download path.
+
+Status
+Phase I — issue selected, project forked, interest comment posted.
