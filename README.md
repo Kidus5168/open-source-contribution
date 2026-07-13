@@ -54,4 +54,4 @@ In `add_graph_to_library()`, use the already-resolved `StoreListingVersion` to c
 
 ## Status
 
-Phase II — codebase investigated, root cause identified, fix approach scoped. Interest comment on the issue still pending; implementation/PR is the next step.
+Phase II — codebase investigated, root cause identified, fix approach scoped. [Interest comment posted on the issue](https://github.com/Significant-Gravitas/AutoGPT/issues/9879#issuecomment-4954807673). Implementation/PR is the next step.
