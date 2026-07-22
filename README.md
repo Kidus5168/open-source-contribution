@@ -54,6 +54,7 @@ In `add_graph_to_library()`, use the already-resolved `StoreListingVersion` to c
 
 ## Implementation (Phase III)
 
+**Pull Request:** [Significant-Gravitas/AutoGPT#13639](https://github.com/Significant-Gravitas/AutoGPT/pull/13639)
 **Branch:** [`fix/9879-carry-marketplace-image`](https://github.com/Kidus5168/AutoGPT/tree/fix/9879-carry-marketplace-image) (on my fork)
 
 ### Summary
@@ -81,4 +82,4 @@ The **wrong-title** half of the issue is *not* fixed on this branch. `LibraryAge
 
 ## Status
 
-Phase III — image carry-over implemented, tested (unit + syntax), and pushed to a branch on my fork. [Interest comment posted on the issue](https://github.com/Significant-Gravitas/AutoGPT/issues/9879#issuecomment-4954807673). Title fix (needs a schema migration) is the documented next step.
+Phase III — image carry-over implemented, tested (unit + syntax), and submitted as [PR #13639](https://github.com/Significant-Gravitas/AutoGPT/pull/13639) to the upstream repo. [Interest comment posted on the issue](https://github.com/Significant-Gravitas/AutoGPT/issues/9879#issuecomment-4954807673). Title fix (needs a schema migration) is the documented next step.
