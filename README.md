@@ -52,6 +52,33 @@ In `add_graph_to_library()`, use the already-resolved `StoreListingVersion` to c
 
 **Files that would change:** `_add_to_library.py` (primary), `model.py` (display mapping), plus their existing test files (`_add_to_library_test.py`, `model_test.py`).
 
+## Implementation (Phase III)
+
+**Branch:** [`fix/9879-carry-marketplace-image`](https://github.com/Kidus5168/AutoGPT/tree/fix/9879-carry-marketplace-image) (on my fork)
+
+### Summary
+
+I implemented the **image carry-over** half of the issue — the part that can be fixed cleanly without a database migration.
+
+When an agent is downloaded from the marketplace, `add_graph_to_library()` created the `LibraryAgent` from the graph only, so its `imageUrl` was never set and the library entry showed no artwork. The change:
+
+- Added a helper `_fetch_marketplace_image_url()` that reads the first image from the `StoreListingVersion.imageUrls` for the listing being downloaded.
+- Set `LibraryAgent.imageUrl` from that value on the **create** path, and on the **restore** path for a previously soft-deleted entry — guarding the restore so it never blanks out an image the user might already have.
+
+**Files changed:**
+- `autogpt_platform/backend/backend/api/features/library/_add_to_library.py` — the fix
+- `autogpt_platform/backend/backend/api/features/library/_add_to_library_test.py` — tests
+
+### Testing Notes
+
+- **Unit tests added:** `test_add_graph_to_library_carries_marketplace_image` (verifies the marketplace image is written to `imageUrl` on create) and `test_fetch_marketplace_image_url_returns_first_image` (covers the first-image / empty-list / no-listing cases). I also updated the two existing tests to mock the new marketplace-image lookup.
+- **Verified locally:** both edited files pass `python -m py_compile` (syntax/parse check).
+- **Not run locally:** the full `pytest` suite. AutoGPT's backend tests require a generated Prisma client and a Postgres database, which I couldn't set up in my environment. The tests are written against the same mock-based patterns already used in `_add_to_library_test.py`, so they should run under the project's CI.
+
+### Known limitation / next step
+
+The **wrong-title** half of the issue is *not* fixed on this branch. `LibraryAgent` has no title/name column — the displayed name is derived from the graph in `LibraryAgent.from_db()`, and the library-list read paths don't join the store listing. A correct, persistent title fix therefore needs a new `LibraryAgent` column plus a Prisma migration, which I've scoped as the follow-up commit.
+
 ## Status
 
-Phase II — codebase investigated, root cause identified, fix approach scoped. [Interest comment posted on the issue](https://github.com/Significant-Gravitas/AutoGPT/issues/9879#issuecomment-4954807673). Implementation/PR is the next step.
+Phase III — image carry-over implemented, tested (unit + syntax), and pushed to a branch on my fork. [Interest comment posted on the issue](https://github.com/Significant-Gravitas/AutoGPT/issues/9879#issuecomment-4954807673). Title fix (needs a schema migration) is the documented next step.
