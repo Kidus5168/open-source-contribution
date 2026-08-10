@@ -112,8 +112,29 @@ I implemented the **image carry-over** half of the plan above — the part that 
 
 The **wrong-title** half of the issue is *not* fixed on this branch. `LibraryAgent` has no title/name column — the displayed name is derived from the graph in `LibraryAgent.from_db()`. A correct, persistent title fix needs a new `LibraryAgent` column plus a Prisma migration (see Plan step 2 above), which I've scoped as the follow-up commit.
 
+## Pull Request (Phase IV)
+
+**PR:** [Significant-Gravitas/AutoGPT#13639](https://github.com/Significant-Gravitas/AutoGPT/pull/13639) — `fix(library): carry marketplace image onto downloaded agents (#9879)`
+**Summary:** Carries the marketplace listing's image onto a `LibraryAgent` when an agent is downloaded from the marketplace (create path and soft-delete-restore path), fixing the image half of #9879. The title half is explicitly out of scope (needs a schema migration) and is documented as follow-up.
+**Status:** Open against `dev`. CI initially failed (lint formatting + `db_test.py::test_add_agent_to_library`, which caught a real bug: the original change queried `StoreListingVersion` a second time when `resolve_graph_for_library()` had already fetched it). Fixed in commit [`b843a8584`](https://github.com/Kidus5168/AutoGPT/commit/b843a8584) by extracting the image from the listing already in hand instead of re-querying — removes the redundant query and restores the expected single-`find_unique` call. Re-running CI as of this write-up.
+
+## Maintainer Feedback Log
+
+No human maintainer review yet as of 2026-08-10. Automated checks only so far: CLA bot (signed), CodeRabbit (automated walkthrough, no blocking comments), Codecov. Reviewers `ntindle` and `kcze` are requested on the PR; this section will be updated with their feedback, the date, and the responding commit as soon as it arrives.
+
+## Learnings & Reflections
+
+**Technical gains:**
+- Learned to read a Prisma schema and trace a data path (`StoreListingVersion` → `AgentGraph` → `LibraryAgent`) without a running database, using `schema.prisma` and static code reading as the source of truth.
+- Learned that `prisma generate` (client codegen) doesn't need a live database — only actually connecting/querying does. I initially assumed I couldn't verify anything locally without Postgres, which wasn't quite right for the mock-based unit tests.
+- The CI failure was the most useful signal in this whole contribution: it caught a real inefficiency (a redundant DB query per agent download) that code review alone might have missed, because the mock-based tests happened to assert the exact call count.
+
+**What I'd do differently:**
+- Before writing the fix, I'd re-check whether data already fetched earlier in the call chain (`resolve_graph_for_library`'s `slv`) could just be threaded through, instead of adding a new helper that re-fetches it. That's the root cause of the CI failure and would have been visible from re-reading my own Phase II analysis, which had already noted `slv.imageUrls` was "in hand."
+- I'd push a first commit earlier and let CI run sooner, rather than treating "no local DB" as a full test-verification blocker — CI is itself the environment this project expects contributors to lean on.
+
 ## Status
 
 - Phase II plan above, with root cause, an analogous precedent (PR #11347), and a two-part UMPIRE plan.
 - Phase III — image carry-over implemented, tested (unit + syntax), and submitted as [PR #13639](https://github.com/Significant-Gravitas/AutoGPT/pull/13639) to the upstream repo. [Interest comment posted on the issue](https://github.com/Significant-Gravitas/AutoGPT/issues/9879#issuecomment-4954807673).
-- Title fix (needs a schema migration) is the documented next step — not yet started.
+- Phase IV — CI-reported bug (duplicate query) fixed and pushed; awaiting maintainer review. Title fix (needs a schema migration) remains the documented next step — not yet started.
